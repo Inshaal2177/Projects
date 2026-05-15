@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cyber Secutiry Awreness Quiz</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #a9a9afd3;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 20px;
+      }
+      .container {
+        background: white;
+        width: 450px;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(45, 3, 85, 0.849);
+        display: none;
+      }
+      #student-info input {
+        width: 90%;
+        padding: 10px;
+        margin: 8px 0 15px 0;
+        border: 3px solid #ccc;
+        border-radius: 100px;
+      }
+
+      #student-info label {
+        font-weight: bolder;
+      }
+
+      #start-screen {
+        display: block;
+        text-align: center;
+      }
+      h2 {
+        margin-bottom: 15px;
+      }
+      .option {
+        margin: 8px 0;
+        padding: 10px;
+        background: #e9e9e9;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .option:hover {
+        background: #d7d7d8;
+      }
+
+      .btn {
+        margin-top: 15px;
+        width: 100%;
+        padding: 10px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: linear-gradient(135deg, #d60808, #1216eb);
+      }
+
+      .correct {
+        color: rgb(64, 230, 64);
+      }
+      .wrong {
+        color: red;
+      }
+      /* ---------------------- */
+      /*     DARK MODE THEME    */
+      /* ---------------------- */
+
+      body.dark {
+        background: #0f0f0f;
+        color: #e4e4e4;
+        transition: 0.4s ease;
+      }
+
+      body.dark .container,
+      body.dark #quizContainer,
+      body.dark #results-screen,
+      body.dark #start-screen,
+      body.dark #student-info {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 14px;
+        box-shadow: 0 0 20px rgba(228, 217, 217, 0.45);
+        transition: 0.4s ease;
+      }
+
+      /* Inputs */
+      body.dark input {
+        background: #121212;
+        color: #eaeaea;
+        border: 1px solid #333;
+        box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.4);
+        transition: 0.3s ease;
+      }
+
+      body.dark input:focus {
+        border-color: #3a17c5;
+        box-shadow: 0 0 6px rgba(140, 92, 255, 0.4);
+      }
+
+      /* Labels */
+      body.dark label {
+        color: #d0d0d0;
+      }
+
+      /* Buttons */
+      body.dark button {
+        background: linear-gradient(225deg, #d60808, #1216eb);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+        transition: 0.3s ease;
+      }
+
+      body.dark button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+      }
+
+      /* Options */
+      body.dark .option {
+        background: #151515;
+        border: 1px solid #282828;
+        color: #d8d8d8;
+        border-radius: 8px;
+        padding: 12px;
+        margin: 10px 0;
+        transition: 0.3s ease;
+      }
+
+      body.dark .option:hover {
+        border-color: #3308dd;
+        background: #1f1f1f;
+      }
+
+      /* final score text */
+      body.dark #score {
+        color: #c7b7ff;
+        font-weight: bold;
+        font-size: 22px;
+      }
+
+      /* subtle glow on headers */
+      body.dark h2,
+      body.dark h1 {
+        text-shadow: 0 0 6px rgba(130, 92, 255, 0.4);
+      }
+      #result-screen {
+        max-height: 100vh;
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+    </style>
+  </head>
+  <body class="dark">
+    <div id="student-info" class="container" style="display: block">
+      <h2>Enter Your Details</h2>
+
+      <label>Name:</label>
+      <input type="text" id="studentName" placeholder="Enter name" />
+
+      <label>Age:</label>
+      <input type="text" id="studentAge" placeholder="Enter age" />
+
+      <label>Class / Section:</label>
+      <input type="text" id="studentClass" placeholder="Example: 9-B" />
+
+      <button onclick="saveStudentInfo()" class="btn">Continue</button>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="container" style="display: none">
+      <h2>Cyber Security Awreness Quiz</h2>
+      <p>Click below to start.</p>
+      <button class="btn" onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="container">
+      <h2 id="question">Question</h2>
+      <div id="options"></div>
+      <button class="btn" onclick="nextQuestion()">Next</button>
+      <button class="btn" onclick="goBack()">Back</button>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="container">
+      <h2>Your Results</h2>
+      <p id="score"></p>
+      <div id="review"></div>
+      <button class="btn" onclick="location.reload()">Restart Quiz</button>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          question: "What is the main purpose of a password?",
+          options: [
+            "To decorate your login page",
+            "To protect your account",
+            "To slow down the device",
+            "To fill a required box",
+          ],
+          answer: 1,
+        },
+        {
+          question: "Which of the following is an example of a good Password?",
+          options: ["password", "Inshaal123", "H@ck!2025#", "123456"],
+          answer: 2,
+        },
+        {
+          question: "What is phishing?",
+          options: [
+            "Catching fish online",
+            "A fake attempt to steal your information",
+            "A gaming technique",
+            "File saving method",
+          ],
+          answer: 1,
+        },
+        {
+          question: "Which one is a safe practice online?",
+          options: [
+            "Sharing your OTP",
+            "Clicking unknown links",
+            "Using public Wi-Fi for banking",
+            "Logging Out after use",
+          ],
+          answer: 3,
+        },
+        {
+          question: "One sign of a fake Website is:",
+          options: [
+            "The URL has random numbers or misspellings",
+            "It loads very fast",
+            "It uses modern colors",
+            "It has too many ads",
+          ],
+          answer: 0,
+        },
+        {
+          question: "Two-Factor Authentication protects you by:",
+          options: [
+            "Asking for your Social Security Number",
+            "Asking 2 random questions",
+            "Requiring an extra verification step",
+            "Locking your account permanently",
+          ],
+          answer: 2,
+        },
+        {
+          question: "What does malware NOT typically do?",
+          options: [
+            "Steal Data",
+            "Damage or modify files",
+            "Blocking public WIFI",
+            "Slow down performance",
+          ],
+          answer: 2,
+        },
+        {
+          question: "A Trojan Virus usually:",
+          options: [
+            "Looks like a safe program but is harmful",
+            "Requires no user action to activate",
+            "Spreads only through USB",
+            "Only effects Mobile Phones",
+          ],
+          answer: 0,
+        },
+        {
+          question: "Public Wi-Fi is risky mainly because:",
+          options: [
+            "Anyone on the network can try to intercept data",
+            "It uses too much battery",
+            "It is slower",
+            "It stops apps from updating",
+          ],
+          answer: 0,
+        },
+        {
+          question: "Ransomware attackers usually:",
+          options: [
+            "Install firewall updates",
+            "Improve your system’s encryption",
+            "Lock your files and demand payment",
+            "Delete files permanently",
+          ],
+          answer: 2,
+        },
+        {
+          question: "Social engineering relies on:",
+          options: [
+            "Internet speed",
+            "Hardware failures",
+            "Human psychology and trust",
+            "Antivirus strength",
+          ],
+          answer: 2,
+        },
+        {
+          question: "Which of the following is the MOST suspicious email?",
+          options: [
+            "Email from a verified organization",
+            "Email with no attachments",
+            "Email from a friend sharing photos",
+            "Email from your bank asking you to confirm unusual activity",
+          ],
+          answer: 3,
+        },
+        {
+          question: "Which one is the BEST practice?",
+          options: [
+            "Using a password manager",
+            "Saving passwords in text files",
+            "Using the same password everywhere",
+            "Using simple passwords so you don’t forget",
+          ],
+          answer: 0,
+        },
+        {
+          question: "An “Evil Twin” attack happens when:",
+          options: [
+            "Someone clones your SIM",
+            "A hacker creates a fake Wi-Fi network similar to the real one",
+            "Your device duplicates files",
+            "Two apps look identical",
+          ],
+          answer: 1,
+        },
+        {
+          question: "Before installing an app, you should check:",
+          options: [
+            "App size only",
+            "Rating and permissions",
+            "When it was last updated",
+            "Whether your friends have it",
+          ],
+          answer: 1,
+        },
+      ];
+
+      let index = 0;
+      let score = 0;
+      let userAnswers = [];
+
+      function startQuiz() {
+        document.getElementById("start-screen").style.display = "none";
+        document.getElementById("quiz-screen").style.display = "block";
+        loadQuestion();
+      }
+
+      function loadQuestion() {
+        let q = questions[index];
+        document.getElementById("question").innerText = q.question;
+
+        let optionContainer = document.getElementById("options");
+        optionContainer.innerHTML = "";
+
+        q.options.forEach((opt, i) => {
+          let div = document.createElement("div");
+          div.className = "option";
+          div.innerText = opt;
+
+          // Highlight previously selected option
+          if (userAnswers[index] === i) {
+            div.style.background = "#19154d"; // light green
+            div.style.border = "2px solid #2ecc71";
+          }
+
+          div.onclick = () => selectOption(i);
+          optionContainer.appendChild(div);
+        });
+      }
+
+      let studentDetails = {
+        name: "",
+        age: "",
+        class: "",
+      };
+      function goBack() {
+        if (index === 0) return; // cannot go back from Q1
+        index--;
+        loadQuestion();
+      }
+
+      function saveStudentInfo() {
+        const name = document.getElementById("studentName").value.trim();
+        const age = document.getElementById("studentAge").value.trim();
+        const cls = document.getElementById("studentClass").value.trim();
+
+        if (name === "" || age === "" || cls === "") {
+          alert("Please fill all fields.");
+          return;
+        }
+
+        studentDetails.name = name;
+        studentDetails.age = age;
+        studentDetails.class = cls;
+
+        // hide info page
+        document.getElementById("student-info").style.display = "none";
+
+        // show start page
+        document.getElementById("start-screen").style.display = "block";
+      }
+
+      function selectOption(selected) {
+        userAnswers[index] = selected; // Save or overwrite answer
+        nextQuestion();
+      }
+
+      function nextQuestion() {
+        index++;
+        if (index < questions.length) {
+          loadQuestion();
+        } else {
+          showResults();
+        }
+      }
+
+      function showResults() {
+        document.getElementById("quiz-screen").style.display = "none";
+        document.getElementById("result-screen").style.display = "block";
+
+        // calculate score here
+        score = 0;
+        userAnswers.forEach((ans, i) => {
+          if (ans === questions[i].answer) score++;
+        });
+
+        document.getElementById(
+          "score"
+        ).innerText = `Your Score: ${score} / ${questions.length}`;
+
+        let review = document.getElementById("review");
+        review.innerHTML = "";
+
+        questions.forEach((q, i) => {
+          let div = document.createElement("div");
+          div.innerHTML = `<p><strong>Q${i + 1}: ${q.question}</strong><br>
+    Your Answer: <span class="${
+      userAnswers[i] === q.answer ? "correct" : "wrong"
+    }">${q.options[userAnswers[i]]}</span><br>
+    Correct Answer: <span class="correct">${q.options[q.answer]}</span></p>`;
+          review.appendChild(div);
+        });
+      }
+    </script>
+  </body>
+</html>
